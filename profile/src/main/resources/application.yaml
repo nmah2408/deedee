@@ -1,0 +1,22 @@
+server:
+  port: 7070
+  servlet:
+    context-path: /profile
+
+spring:
+  datasource:
+    url: "jdbc:mysql://localhost:3306/profile_db"
+    username: root
+    password: Tam626644,
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+jwt:
+  secret-key: "2E8A7F6B9C3D5A1E4F7B0C3E6F1A8D7B2F5C8A9D1B7E4F8A3C6B9D2E5F8A9"
+  refreshTokenTime: 10000
+  expirationTime: 10000
