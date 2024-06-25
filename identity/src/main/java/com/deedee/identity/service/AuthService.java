@@ -2,6 +2,7 @@ package com.deedee.identity.service;
 
 import com.deedee.identity.entity.Account;
 import com.deedee.identity.entity.Role;
+import com.deedee.identity.exception.AccountExistsException;
 import com.deedee.identity.repository.AccountRepository;
 import com.deedee.identity.repository.RoleRepository;
 import com.deedee.identity.request.LoginRequest;
@@ -29,6 +30,9 @@ public class AuthService {
     private final RefreshTokenService refreshTokenService;
 
     public AuthResponse register(RegisterRequest request) {
+        if (accountRepository.findByUsername(request.getUsername()).isPresent()) {
+            throw new AccountExistsException("Email " + request.getUsername() + " is existed");
+        }
         // get role USER
         Optional<Role> ROLE_USER = roleRepository.findByName("User");
         Set<Role> roles = new HashSet<>();
