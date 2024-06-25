@@ -1,9 +1,11 @@
-package com.deedee.identity.response;
+package com.deedee.identity.exception.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -12,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class ErrorApiResponse {
     private Meta meta;
     private ErrorDetails error;
-    private String stackTrace;
+    private List<String> stackTrace;
 
     @Data
     @NoArgsConstructor
@@ -28,7 +30,7 @@ public class ErrorApiResponse {
     @AllArgsConstructor
     @Builder
     public static class ErrorDetails {
-        private String code;
+        private int code;
         private String message;
         private Object data;
     }

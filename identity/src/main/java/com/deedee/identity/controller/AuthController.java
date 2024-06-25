@@ -7,6 +7,7 @@ import com.deedee.identity.request.LoginRequest;
 import com.deedee.identity.request.RefreshTokenRequest;
 import com.deedee.identity.request.RegisterRequest;
 import com.deedee.identity.response.AuthResponse;
+import com.deedee.identity.response.SuccessApiResponse;
 import com.deedee.identity.service.AuthService;
 import com.deedee.identity.service.JwtService;
 import com.deedee.identity.service.RefreshTokenService;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,29 +32,31 @@ public class AuthController {
 
     // endpoint to register new user
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register (@Valid @RequestBody RegisterRequest request) {
-        return ResponseEntity.ok(authService.register(request));
+    public ResponseEntity<SuccessApiResponse<AuthResponse>> register (@Valid @RequestBody RegisterRequest request) {
+        profileFeignClient.createProfile(request.getUsername());
+        AuthResponse register = authService.register(request);
+        return ResponseEntity.ok(SuccessApiResponse.buildResponse(register));
     }
 
     // endpoint to authenticate user for login
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login (@Valid @RequestBody LoginRequest request) {
-        profileFeignClient.createProfile(request.getUsername());
-        return ResponseEntity.ok(authService.login(request));
+    public ResponseEntity<SuccessApiResponse<AuthResponse>> login (@Valid @RequestBody LoginRequest request) {
+        AuthResponse login = authService.login(request);
+        return ResponseEntity.ok(SuccessApiResponse.buildResponse(login));
     }
 
     @PostMapping("/refreshToken")
-    public ResponseEntity<AuthResponse> refreshToken (@RequestBody RefreshTokenRequest request) {
+    public ResponseEntity<SuccessApiResponse<AuthResponse>> refreshToken (@RequestBody RefreshTokenRequest request) {
 
         RefreshToken refreshToken = refreshTokenService.verifyRefreshToken(request.getRefreshToken());
         Account account = refreshToken.getAccount();
-
         String token = this.jwtService.generateToken(account);
-
-        return ResponseEntity.ok(AuthResponse.builder()
+        AuthResponse build = AuthResponse.builder()
                 .refreshToken(refreshToken.getRefreshToken())
                 .accessToken(token)
-                .build());
+                .build();
+
+        return ResponseEntity.ok(SuccessApiResponse.buildResponse(build));
     }
 }
 
